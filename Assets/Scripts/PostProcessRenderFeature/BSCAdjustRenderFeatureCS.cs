@@ -9,13 +9,12 @@ public class BSCAdjustRenderFeatureCS : ScriptableRendererFeature
     [System.Serializable]
     public class BSCAdjustSetting
     {
-
-        [Range(0, 1)] public float Intensity = 0.5f;
-
         public string passName = "BSCAdjustRenderFeatureCSPass";
         public ComputeShader CS = null;
 
-
+        [Range(0, 2)] public float Saturate = 1f;
+        [Range(0, 2)] public float Bright = 1f;
+        [Range(-2,3)] public float Constrast = 1f;
 
 
         public RenderPassEvent passEvent = RenderPassEvent.AfterRenderingTransparents;
@@ -25,31 +24,23 @@ public class BSCAdjustRenderFeatureCS : ScriptableRendererFeature
 
     public BSCAdjustSetting m_Setting = new BSCAdjustSetting();
 
-
-
-    //Gradient gradient = new Gradient();
-    //gradient.Evaluate(0);
-
-    class ChromaticAberrationRenderPass : ScriptableRenderPass
+    class BSCAdjustRenderPass : ScriptableRenderPass
     {
         BSCAdjustSetting setting;
 
         public RenderTargetIdentifier Source { get; set; }
 
-        RenderTexture renderTexture = new RenderTexture(3, 1, 0);
-        Texture2D AberrationLUT = new Texture2D(3, 1);
-        public RenderTargetHandle aberrationTex;
+        public RenderTargetHandle BSCAdjustTex;
 
-        public ChromaticAberrationRenderPass(BSCAdjustSetting setting)
+        public BSCAdjustRenderPass(BSCAdjustSetting setting)
         {
             this.setting = setting;
 
-            AberrationLUT.SetPixel(0, 0, Color.red);
-            AberrationLUT.SetPixel(1, 0, Color.green);
-            AberrationLUT.SetPixel(2, 0, Color.blue);
-            AberrationLUT.filterMode = FilterMode.Bilinear;
-            AberrationLUT.Apply();
-            aberrationTex.Init("passChromaticAberrationRT");
+            BSCAdjustTex.Init("BSCAdjustRT");
+        }
+
+        public void setup(RenderTargetIdentifier source) {
+            this.Source = source;
         }
 
 
@@ -59,15 +50,20 @@ public class BSCAdjustRenderFeatureCS : ScriptableRendererFeature
 
             RenderTextureDescriptor opaqueDesc = renderingData.cameraData.cameraTargetDescriptor;
 
+            opaqueDesc.enableRandomWrite = true;
+
             Camera camera = renderingData.cameraData.camera;
 
+            cmd.GetTemporaryRT(BSCAdjustTex.id, opaqueDesc);
+            cmd.SetComputeFloatParam(setting.CS,"_Bright",setting.Bright);
+            cmd.SetComputeFloatParam(setting.CS,"_Saturate",setting.Saturate);
+            cmd.SetComputeFloatParam(setting.CS, "_Constrast", setting.Constrast);
 
+            cmd.SetComputeTextureParam(setting.CS,0,"_Result",BSCAdjustTex.id);
+            cmd.SetComputeTextureParam(setting.CS,0,"_Source",Source);
 
-            
-
-            cmd.GetTemporaryRT(aberrationTex.id, opaqueDesc);
-
-
+            cmd.DispatchCompute(setting.CS,0,(int)opaqueDesc.width/8,(int)opaqueDesc.height/8,1);
+            cmd.Blit(BSCAdjustTex.id,Source);
 
             context.ExecuteCommandBuffer(cmd);
 
@@ -78,23 +74,27 @@ public class BSCAdjustRenderFeatureCS : ScriptableRendererFeature
 
         public override void FrameCleanup(CommandBuffer cmd)
         {
-            cmd.ReleaseTemporaryRT(aberrationTex.id);
+            cmd.ReleaseTemporaryRT(BSCAdjustTex.id);
             base.FrameCleanup(cmd);
         }
 
     }
 
-    ChromaticAberrationRenderPass renderPass;
+    BSCAdjustRenderPass renderPass;
 
 
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-       
+        if (m_Setting.CS != null) {
+            var src = renderer.cameraColorTarget;
+            renderPass.setup(src);
+            renderer.EnqueuePass(renderPass);
+        }
     }
 
     public override void Create()
     {
-        
+        renderPass = new BSCAdjustRenderPass(m_Setting);
     }
 }

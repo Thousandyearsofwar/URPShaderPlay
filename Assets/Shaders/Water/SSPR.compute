@@ -1,0 +1,59 @@
+﻿#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+#pragma enable_d3d11_debug_symbols
+#pragma kernel SSPRMain
+#pragma kernel SSPRClear
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+Texture2D<float>_CameraDepthTexture;
+RWTexture2D<uint> _Result;
+
+float3 cameraPos;
+int ResultSize;
+float WaterHeight;
+float4x4 matrix_VP;
+float4x4 matrix_IVP;
+float4 ReflectionData[3];
+
+float2 Project(float3 world){
+    float4 worldW=float4(world,1.0f);
+    worldW=mul(matrix_VP,worldW);
+    worldW.xy=worldW.xy/worldW.w;
+    worldW.xy=(worldW.xy+float2(1.0f,1.0f))/2.0f;
+    return worldW.xy;
+}
+
+uint2 RefScreenUV(float3 wPos){
+    if(wPos.y>WaterHeight){
+        float3 RefposWS=float3(wPos.x,WaterHeight*2-wPos.y,wPos.z);
+        float2 RefposUV=Project(RefposWS);
+        uint2 ReflPosPixel=RefposUV*ResultSize;
+        return ReflPosPixel;
+    }else{
+        return uint2(1,1);
+    }
+}
+
+
+
+[numthreads(8,8,1)]
+void SSPRMain (uint3 id : SV_DispatchThreadID)
+{
+    float3 wPos=_CameraDepthTexture[id.xy].x;
+    uint2 _RefScreenUV=RefScreenUV(wPos);
+    uint2 SrcPosPixel=_CameraDepthTexture[id.xy].x*ResultSize;
+    uint2 SrcPixel=id.xy*ResultSize;
+    uint Hash=SrcPosPixel.y<<16|SrcPosPixel.x;
+    uint dotCare=0;
+    InterlockedMin(_Result[_RefScreenUV],Hash,dotCare);
+    //_Result[_RefScreenUV]=Hash;
+}
+
+
+[numthreads(8,8,1)]
+void SSPRClear (uint3 id : SV_DispatchThreadID)
+{
+    // TODO: insert actual code here!
+
+    _Result[id.xy] =0;
+}

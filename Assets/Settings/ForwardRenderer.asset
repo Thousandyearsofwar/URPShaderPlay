@@ -1,5 +1,77 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7169833315507961770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06a1e2cbdeb8b2d41a8e678c28677312, type: 3}
+  m_Name: FogRenderFeature
+  m_EditorClassIdentifier: 
+  m_Active: 0
+  m_RenderSetting:
+    passName: FogRenderPass
+    material: {fileID: 2100000, guid: 51b952dd1bd141749b63674f62c2bf53, type: 2}
+    passEvent: 500
+    matPassIndex: -1
+--- !u!114 &-6256920763356076477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1856f444f7157ea42bbc411690f02ea8, type: 3}
+  m_Name: NewAdditionalPostProcessRenderFeature
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  evt: 500
+  postData: {fileID: 11400000, guid: a23b7e857870e7c4b8235bb3d90503d9, type: 2}
+--- !u!114 &-5515989214983673438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
+  m_Name: NewRenderObjects
+  m_EditorClassIdentifier: 
+  m_Active: 0
+  settings:
+    passTag: NewRenderObjects
+    Event: 300
+    filterSettings:
+      RenderQueueType: 0
+      LayerMask:
+        serializedVersion: 2
+        m_Bits: 0
+      PassNames: []
+    overrideMaterial: {fileID: 0}
+    overrideMaterialPassIndex: 0
+    overrideDepthState: 0
+    depthCompareFunction: 4
+    enableWrite: 1
+    stencilSettings:
+      overrideStencilState: 0
+      stencilReference: 0
+      stencilCompareFunction: 8
+      passOperation: 0
+      failOperation: 0
+      zFailOperation: 0
+    cameraSettings:
+      overrideCamera: 0
+      restoreCamera: 1
+      offset: {x: 0, y: 0, z: 0, w: 0}
+      cameraFieldOfView: 60
 --- !u!114 &-4839997992808465458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13,6 +85,26 @@ MonoBehaviour:
   m_Name: DepthNormalRenderFeature
   m_EditorClassIdentifier: 
   m_Active: 0
+--- !u!114 &-3222277413530319920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce144bcbaa15f5f4fae2e1b3541128f6, type: 3}
+  m_Name: BSCAdjustRenderFeatureCS
+  m_EditorClassIdentifier: 
+  m_Active: 0
+  m_Setting:
+    passName: BSCAdjustRenderFeatureCSPass
+    CS: {fileID: 7200000, guid: d04b892f8fc7ca943965fd0de7a2074d, type: 3}
+    Saturate: 1.14
+    Bright: 1.21
+    Constrast: 0.8
+    passEvent: 1000
 --- !u!114 &-2945696167187538283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45,7 +137,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 0
   m_Setting:
-    Intensity: 0.038
+    Intensity: 0
     passName: ChromaticAberrationPass
     material: {fileID: 2100000, guid: 887437170f3543f48acfd5f7c22dccc1, type: 2}
     passEvent: 500
@@ -63,7 +155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 0
   setting:
-    passEvent: 600
+    passEvent: 550
     material: {fileID: 2100000, guid: 55a5a1f3574568e49a9ddb00c6542101, type: 2}
     matPassIndex: -1
 --- !u!114 &11400000
@@ -87,7 +179,12 @@ MonoBehaviour:
   - {fileID: -2945696167187538283}
   - {fileID: -4839997992808465458}
   - {fileID: -1234843606683766023}
-  m_RendererFeatureMap: 71c43dbe5e038cf36679ce8c3704905319e1bceacc319a250d644ae0439144369539a0d429d77c16959e8e62f1c81ed7ce3b0c0d78dfd4bcf9b2733e48f4dcee
+  - {fileID: -7169833315507961770}
+  - {fileID: -3222277413530319920}
+  - {fileID: -6256920763356076477}
+  - {fileID: 5648745375333325134}
+  - {fileID: -5515989214983673438}
+  m_RendererFeatureMap: 71c43dbe5e038cf36679ce8c3704905319e1bceacc319a250d644ae0439144369539a0d429d77c16959e8e62f1c81ed7ce3b0c0d78dfd4bcf9b2733e48f4dcee5600634296a27f9cd0c3c2c6c32b48d343266560b7f32aa94e995f93fd5f644ea22903b0084573b3
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   shaders:
     blitPS: {fileID: 4800000, guid: c17132b1f77d20942aa75f8429c0f8bc, type: 3}
@@ -126,14 +223,14 @@ MonoBehaviour:
   m_Setting:
     passName: BokehBlurPass
     material: {fileID: 2100000, guid: 15073d9923d00104aa8d5ae39e5c2252, type: 2}
-    loop: 69
-    blurRadius: 1.13
-    blurSmoothness: 0.5
-    Offset_X: 0
-    Offset_Y: 0
-    AreaSize: 1
+    loop: 11
+    blurRadius: 3
+    blurSmoothness: 0.199
+    Offset_X: -0.146
+    Offset_Y: 0.344
+    AreaSize: 0.269
     Spread: 3.1
-    downSample: 2
+    downSample: 7
     passEvent: 500
     matPassIndex: -1
 --- !u!114 &2709532881998111001
@@ -176,10 +273,27 @@ MonoBehaviour:
     y: 0.5
     loop: 8
     blurRadius: 0.02
-    downSample: 2
-    intensity: 0.5
+    downSample: 3
+    intensity: 0.826
     passEvent: 500
     matPassIndex: -1
+--- !u!114 &5648745375333325134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75398fcc492b8a14e9a4ec4b58eec6b5, type: 3}
+  m_Name: NewSDFDebugRenderFeature
+  m_EditorClassIdentifier: 
+  m_Active: 0
+  m_Setting:
+    passName: SDFTest
+    material: {fileID: 2100000, guid: 8c801de7644bf5341b39279cf2395b48, type: 2}
+    passEvent: 400
 --- !u!114 &6021317338426407270
 MonoBehaviour:
   m_ObjectHideFlags: 0
